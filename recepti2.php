@@ -1,10 +1,10 @@
 <?php  
  //index.php  
- $connect = mysqli_connect('localhost', 'root', '', 'slatkisi');  
- $query = "SELECT * , r.nazivKategorije FROM kolaci k LEFT JOIN kategorija r on (k.tip=r.tipID)
-           GROUP BY k.id  
-           ORDER BY id DESC";  
- $result = mysqli_query($connect, $query);  
+ //$connect = mysqli_connect('localhost', 'root', '', 'slatkisi');  
+// $query = "SELECT * , r.nazivKategorije FROM kolaci k LEFT JOIN kategorija r on (k.tip=r.tipID)
+           //GROUP BY k.id  
+           //ORDER BY id DESC";  
+ //$result = mysqli_query($connect, $query);  
  ?>  
  <!DOCTYPE html>  
  <html>  
@@ -15,19 +15,7 @@
            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>  
       </head>  
       <body>  
-        <?php require_once 'process.php';?>
-
-        <?php
-            if(isset($_SESSION['message'])): ?>
-
-            <div class="alert alert-<?=$_SESSION['msg_type']?>">
-            <?php
-                echo $_SESSION['message'];
-                unset($_SESSION['message']);
-            ?>
-            </div>
-        <?php endif ?>
-        
+        <!--<h1>php require_once 'process.php'</h1>-->
 
         <a href="index.php" class="btn btn-info" style="height:70px;"><h2>Home</h2></a>
 
@@ -48,7 +36,7 @@
             <div class="table-responsive" id="kolaci_table">  
                 <table class="table table-bordered">  
                     <tr>  
-                                
+                        <th><a class="column_sort" id="redniBroj" data-order="desc" href="#">R.B.</a></th>        
                         <th><a class="column_sort" id="naziv" data-order="desc" href="#">Naziv</a></th>  
                         <th><a class="column_sort" id="sastojci" data-order="desc" href="#">Sastojci</a></th>  
                         <th><a class="column_sort" id="vremePripreme" data-order="desc" href="#">Vreme pripreme</a></th>  
@@ -57,76 +45,44 @@
                         <th colspan="2">Action</th>
                      
                     </tr>  
-                <?php  
-                    while($row = mysqli_fetch_array($result))  
-                        {  
+                <?php 
+
+                    include 'database.php';
+                    $model = new Database('slatkisi');
+                    $rows = $model->fetch();
+                    $i = 1;
+                    if(!empty($rows)){
+                      foreach($rows as $row){ 
+                  
                 ?>  
                 <tr>  
-                                
+                    <td><?php echo $i++; ?></td>           
                     <td><?php echo $row["naziv"]; ?></td>  
                     <td><?php echo $row["sastojci"]; ?></td>  
                     <td><?php echo $row["vremePripreme"]; ?></td>  
                     <td><?php echo $row["tip"]; ?></td> 
                     <td><?php echo $row["nazivKategorije"]; ?></td>
                     <td>
-                        <a href="recepti2.php?edit=<?php echo $row['id']; ?>"
+                        <a href="kolaci.php?edit=<?php echo $row['id']; ?>"
                             class="btn btn-info">Edit</a>
-                        <a href="process.php?delete=<?php echo $row['id']; ?>"
+                        <a href="kolaci.php?delete=<?php echo $row['id']; ?>"
                             class="btn btn-danger">Delete</a>
                     </td> 
                 </tr>  
-                <?php  
-                    }  
-                ?>  
+                <?php
+                   }
+                    }else{
+                    echo "no data";
+                    }
+
+                ?> 
                 </table>  
                 </div>  
            </div>  
            <br /> 
 
-           <div class="row justify-content-center">
-            <form action="process.php" method="post">
-            <input type="hidden" name="id" value="<?php echo $id;?>">
-            <div class="form-group">
-            <label>Naziv</label>
-            <input type="text" name="naziv" class="form-control" 
-                value="<?php echo $naziv; ?>" placeholder="Unesite naziv">
-            </div>
-            <div class="form-group">
-            <label>Sastojci</label>
-            <input type="text" name="sastojci" class="form-control"
-                value="<?php echo $sastojci; ?>" placeholder="Unesite sastojke">
-            </div>
-            <div class="form-group">
-            <label>Vreme pripreme</label>
-            <input type="text" name="vremePripreme" class="form-control"
-                value="<?php echo $vremePripreme; ?>" placeholder="Unesite vreme pripreme">
-            </div>
-            <div class="form-group">
-            <label>Tip</label>
-            <!--<input type="text" name="tip" class="form-control"-->
-                <!--value="--><!--" placeholder="Unesite tip">-->
-            <select name="tip" id="tip">
-            <?php
-                 $result = $mysqli->query("SELECT * FROM kategorija ") or die($mysqli->error);
-                 
-                while($row=$result->fetch_assoc()):
-            ?>
-                <option value="<?php echo $row['tipID'];?>"><?php echo $row['nazivKategorije'];?></option>
-                <?php endwhile;?>        
-            </select>
            
-            </div>
-            <div class="form-group">
-            <?php 
-                if($update==true):
-            ?>
-                <button type="submit" class="btn btn-primary" name="update">Update</button>
-            <?php else: ?>
-                <button type="submit" class="btn btn-primary" name="save">Save</button>
-            <?php endif; ?>
-            </div>
-        </form>
-    </div>
+         <a href="kolaci.php?insert"  class="btn btn-info" style="height:70px;"><h2>Unesi nov</h2></a>
     
 
     </body>  
